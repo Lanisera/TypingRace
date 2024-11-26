@@ -26,6 +26,7 @@ add_executable(server
 
 add_executable(client
 	${CLIENT_DIR}/client.cpp
+	${CLIENT_DIR}/resources_manager.cpp
 )
 
 target_include_directories(server PUBLIC
@@ -33,5 +34,18 @@ target_include_directories(server PUBLIC
 )
 
 target_include_directories(client PUBLIC
+	${SDL2_INCLUDE_DIRS}
+	${SDL2_image_INCLUDE_DIRS}
+	${SDL2_ttf_INCLUDE_DIRS}
+	${SDL2_mixer_INCLUDE_DIRS}
+	${SDL2_gfx_INCLUDE_DIRS}
 	./include
+)
+
+target_link_libraries(client
+	SDL2::SDL2
+	SDL2_ttf::SDL2_ttf
+	SDL2_image::SDL2_image
+	SDL2_mixer::SDL2_mixer
+	${SDL2_gfx_LIBRARIES}
 )
