@@ -1,4 +1,5 @@
 #include "animation/animation.h"
+#include "camera/camera.h"
 #include "manager/resources_manager.h"
 #include <SDL_render.h>
 #include <bits/types/wint_t.h>
@@ -51,11 +52,16 @@ void Animation::on_update(double delta)
 	timer.on_update(delta);
 }
 
-void Animation::on_render(SDL_Renderer* renderer, const SDL_Point& pos_dst, double angle) const
+void Animation::on_render(const Camera& camera, SDL_Renderer* renderer, const SDL_Point& pos_dst, double angle) const
 {
 	static SDL_Rect rect_dst;
-	
-	rect_dst.x = pos_dst.x, rect_dst.y = pos_dst.y;
+	static SDL_Point camera_pos;
+
+	camera_pos.x = camera.get_position().x;
+	camera_pos.y = camera.get_position().y;
+
+	rect_dst.x = pos_dst.x - camera_pos.x;
+	rect_dst.y = pos_dst.y - camera_pos.y;
 	rect_dst.w = width_frame, rect_dst.h = height_frame;
 
 	SDL_RenderCopyEx(renderer, anim_tex_list[idx_frame], nullptr, &rect_dst, angle, nullptr, SDL_FLIP_NONE);

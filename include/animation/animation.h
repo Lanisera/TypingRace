@@ -1,6 +1,7 @@
 #pragma once
 
 #include "timer/timer.h"
+#include "camera/camera.h"
 #include "manager/resources_manager.h"
 #include <SDL_rect.h>
 #include <SDL_render.h>
@@ -28,7 +29,7 @@ public:
 
 	void on_update(double delta);
 
-	void on_render(SDL_Renderer* renderer, const SDL_Point& pos_dst, double angle = 0) const;
+	void on_render(const Camera& camera, SDL_Renderer* renderer, const SDL_Point& pos_dst, double angle = 0) const;
 
 private:
 	Timer timer;
