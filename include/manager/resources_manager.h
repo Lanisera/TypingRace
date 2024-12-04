@@ -27,6 +27,7 @@ enum class ResID
 	Tex_UI_2,
 	Tex_UI_3,
 	Tex_UI_Fight,
+	Tex_UI_Textbox,
 
 	Anim_Hajimi_Idle_Up,
 	Anim_Hajimi_Idle_Down,

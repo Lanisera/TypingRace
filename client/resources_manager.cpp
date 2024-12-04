@@ -12,6 +12,7 @@ bool ResourcesManager::load_resources_from_file(SDL_Renderer* renderer)
 	texture_pool[ResID::Tex_UI_2] = IMG_LoadTexture(renderer, "../resources/ui_2.png");
 	texture_pool[ResID::Tex_UI_3] = IMG_LoadTexture(renderer, "../resources/ui_3.png");
 	texture_pool[ResID::Tex_UI_Fight] = IMG_LoadTexture(renderer, "../resources/ui_fight.png");
+	texture_pool[ResID::Tex_UI_Textbox] = IMG_LoadTexture(renderer, "../resources/ui_textbox.png");
 
 	for (const auto& pair : texture_pool)
 		if (pair.second == nullptr)

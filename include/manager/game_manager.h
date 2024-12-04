@@ -26,6 +26,11 @@ public:
 public:
 	int run(int argc, char **argv);
 
+public:
+	int idx_line = 0;
+	int idx_char = 0;
+	std::vector<std::string> str_line_list;
+
 protected:
 	GameManager(); 
 
@@ -43,10 +48,7 @@ private:
 	void on_render();
 
 private:
-	int idx_line = 0;
-	int idx_char = 0;
 	std::string str_text;
-	std::vector<std::string> str_line_list;
 
 	std::string str_address;
 	httplib::Client* client = nullptr;
