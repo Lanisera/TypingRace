@@ -44,7 +44,60 @@ Player::Player(ResourcesManager::AnimTexList tex_list_idle_up, ResourcesManager:
 
 void Player::on_update(double delta)
 {
+	if (!(position - pos_target).approx_zero())
+		velocity = (pos_target - position).normalize() * SPEED_RUN;
+	else
+		velocity = Vector2(0, 0);
 
+	if ((pos_target - position).length() <= (velocity * delta).length())
+		position = pos_target;
+	else
+		position += velocity * delta;
+
+	if (((velocity - Vector2(0, 0)).approx_zero()))
+	{
+		switch (facing)
+		{
+			case Player::Facing::Up:
+				current_anim = &anim_idle_up;
+				break;
+			case Player::Facing::Down:
+				current_anim = &anim_idle_down;
+				break;
+			case Player::Facing::Left:
+				current_anim = &anim_idle_left;
+				break;
+			case Player::Facing::Right:
+				current_anim = &anim_idle_right;
+				break;
+		}
+	}
+	else
+	{
+		if (abs(velocity.y) >= 0.0001f)
+			facing = (velocity.y > 0) ? Player::Facing::Down : Player::Facing::Up;
+		if (abs(velocity.x) >= 0.0001f)
+			facing = (velocity.x > 0) ? Player::Facing::Right : Player::Facing::Left;
+
+		switch (facing)
+		{
+		case Player::Facing::Up:	
+			current_anim = &anim_run_up;
+			break;
+		case Player::Facing::Down:	
+			current_anim = &anim_run_down;	
+			break;
+		case Player::Facing::Left:	
+			current_anim = &anim_run_left;	
+			break;
+		case Player::Facing::Right: 
+			current_anim = &anim_run_right; 
+			break;
+		}
+	}
+
+	if (!current_anim) return ;
+	current_anim->on_update(delta);
 }
 
 void Player::on_render(const Camera& camera, SDL_Renderer* renderer)

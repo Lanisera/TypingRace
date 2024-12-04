@@ -1,11 +1,17 @@
 #include "manager/game_manager.h"
 #include "manager/resources_manager.h"
 #include "thirdparty/httplib.h"
+#include "vector/vector2.h"
 #include <SDL.h>
+#include <SDL_events.h>
 #include <SDL_hints.h>
+#include <SDL_image.h>
 #include <SDL_messagebox.h>
 #include <SDL_mixer.h>
+#include <SDL_rect.h>
 #include <SDL_render.h>
+#include <SDL_stdinc.h>
+#include <SDL_timer.h>
 #include <SDL_video.h>
 #include <chrono>
 #include <iostream>
@@ -31,6 +37,7 @@ GameManager::GameManager()
 	init_assert(renderer, u8"渲染器创建失败");
 
 	init_assert(ResourcesManager::instance()->load_resources_from_file(renderer), u8"游戏基本资源加载失败");
+
 }
 
 void GameManager::init_assert(bool flag, const char *err_msg)
@@ -93,4 +100,61 @@ void GameManager::login_to_server()
 
 				}
 			}).detach();
+}
+
+int GameManager::run(int argc, char **argv)
+{
+	Mix_FadeInMusic(ResourcesManager::instance()->get_music_pool().find(ResID::Music_BGM)->second, -1, 1500);
+
+	Uint64 last_counter = SDL_GetPerformanceCounter();
+	Uint64 counter_freq = SDL_GetPerformanceFrequency();
+
+
+	while (!is_quit)
+	{
+		
+		while (SDL_PollEvent(&event))
+			on_input();
+
+		Uint64 cur_counter = SDL_GetPerformanceCounter();
+		double delta = (double)(cur_counter - last_counter) / counter_freq;
+		last_counter = cur_counter;
+		if (delta * 1000.0 < 1000.0 / 60)
+			SDL_Delay((Uint32)(1000.0 / 60) - delta * 1000);
+
+		on_update(delta);
+
+		on_render();
+	}
+
+	return 0;
+}
+
+void GameManager::on_input()
+{
+	switch (event.type)
+	{
+	case SDL_QUIT:
+		is_quit = true;
+		break;
+	}
+
+}
+
+void GameManager::on_update(double delta)
+{
+
+}
+
+void GameManager::on_render()
+{
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
+
+	camera_scene.set_position(Vector2(0, 0));
+	static SDL_Rect rect_src = {842, 842, 1280, 720};
+	static SDL_Rect rect_dst = {0, 0, 1280, 720};
+	SDL_RenderCopy(renderer, ResourcesManager::instance()->get_texture_pool().find(ResID::Tex_Background)->second, &rect_src, &rect_dst);
+
+	SDL_RenderPresent(renderer);
 }

@@ -48,6 +48,7 @@ enum class ResID
 
 class ResourcesManager : public Manager<ResourcesManager>
 {
+	friend class Manager<ResourcesManager>;
 public:
 	using AnimTexList = std::vector<SDL_Texture*>;
 	using FontPool = std::unordered_map<ResID, TTF_Font*>;

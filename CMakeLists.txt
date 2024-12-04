@@ -18,6 +18,8 @@ find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 
 set(CLIENT_DIR client)
+file (GLOB CLIENT "${CLIENT_DIR}/*.cpp")
+
 set(SERVER_DIR server)
 
 add_executable(server
@@ -25,8 +27,7 @@ add_executable(server
 )
 
 add_executable(client
-	${CLIENT_DIR}/client.cpp
-	${CLIENT_DIR}/resources_manager.cpp
+	${CLIENT}
 )
 
 target_include_directories(server PUBLIC

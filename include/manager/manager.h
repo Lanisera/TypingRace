@@ -7,7 +7,7 @@ public:
 	static T* instance()
 	{
 		if (manager == nullptr)
-			return new T();
+			manager = new T();
 		return manager;
 	}
 

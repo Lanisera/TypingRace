@@ -34,10 +34,15 @@ public:
 	
 	const Vector2& get_position() const;
 
+protected:
+	const double SPEED_RUN = 100;
+
 private:
 	Vector2 size;
 	Vector2 position;
 	Vector2 velocity;
+
+	Vector2 pos_target;
 
 	Animation anim_idle_up;
 	Animation anim_idle_down;

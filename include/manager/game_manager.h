@@ -14,6 +14,7 @@
 
 class GameManager : public Manager<GameManager>
 {
+	friend class Manager<GameManager>;
 public:
 	enum class Stage
 	{
@@ -21,6 +22,9 @@ public:
 		Ready,
 		Racing
 	};
+
+public:
+	int run(int argc, char **argv);
 
 protected:
 	GameManager(); 
@@ -31,6 +35,12 @@ private:
 	void init_assert(bool flag, const char *err_msg);
 
 	void login_to_server();
+
+	void on_input();
+
+	void on_update(double delta);
+
+	void on_render();
 
 private:
 	int idx_line = 0;
