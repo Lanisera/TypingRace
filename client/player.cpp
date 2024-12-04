@@ -74,9 +74,9 @@ void Player::on_update(double delta)
 	}
 	else
 	{
-		if (abs(velocity.y) >= 0.0001f)
+		if (abs(velocity.y) >= 0.0001)
 			facing = (velocity.y > 0) ? Player::Facing::Down : Player::Facing::Up;
-		if (abs(velocity.x) >= 0.0001f)
+		if (abs(velocity.x) >= 0.0001)
 			facing = (velocity.x > 0) ? Player::Facing::Right : Player::Facing::Left;
 
 		switch (facing)
@@ -120,4 +120,16 @@ void Player::set_position(const Vector2& position)
 const Vector2& Player::get_position() const
 {
 	return position;
+}
+
+void Player::refresh_new_target()
+{
+	int idx_progress = path->get_idx_at_progress(0);
+	if (idx_progress == idx_target)
+		pos_target = path->get_position_at_progress(0);
+	else
+	{
+		pos_target = path->get_point_list()[idx_target];
+		idx_target++;
+	}
 }

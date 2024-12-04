@@ -1,4 +1,5 @@
 #include "ui/text_bar.h"
+#include "camera/camera.h"
 #include "manager/game_manager.h"
 #include "manager/resources_manager.h"
 #include <SDL_render.h>
@@ -43,11 +44,12 @@ void TextBar::on_update(SDL_Renderer* renderer)
 	SDL_FreeSurface(suf_text_completed);
 }
 
-void TextBar::on_render(SDL_Renderer* renderer)
+void TextBar::on_render(const Camera& camera, SDL_Renderer* renderer)
 {
 	static SDL_Rect rect_dst;
 
-	rect_dst.x = position.x ,rect_dst.y = position.y;
+	rect_dst.x = position.x - camera.get_position().x;
+	rect_dst.y = position.y - camera.get_position().y;
 	rect_dst.w = 1280, rect_dst.h = 120;
 	SDL_RenderCopy(renderer, ResourcesManager::instance()->get_texture_pool().find(ResID::Tex_UI_Textbox)->second, nullptr, &rect_dst);
 

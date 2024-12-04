@@ -1,5 +1,6 @@
 #pragma once
 
+#include "camera/camera.h"
 #include <SDL_pixels.h>
 #include <SDL_rect.h>
 #include <SDL_render.h>
@@ -15,7 +16,7 @@ public:
 
 	void on_update(SDL_Renderer* renderer);
 
-	void on_render(SDL_Renderer* renderer);
+	void on_render(const Camera& camera, SDL_Renderer* renderer);
 
 private:
 	const SDL_Point offset_shadow = {2, 2};

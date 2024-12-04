@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera/camera.h"
+#include "path/path.h"
 #include "vector/vector2.h"
 #include "animation/animation.h"
 #include "manager/resources_manager.h"
@@ -38,11 +39,16 @@ protected:
 	const double SPEED_RUN = 100;
 
 private:
+	void refresh_new_target();
+
+private:
 	Vector2 size;
 	Vector2 position;
 	Vector2 velocity;
 
+	int idx_target = 0;
 	Vector2 pos_target;
+	const Path* path = nullptr;
 
 	Animation anim_idle_up;
 	Animation anim_idle_down;
