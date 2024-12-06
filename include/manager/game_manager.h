@@ -7,10 +7,12 @@
 #include <string>
 #include <vector>
 #include "camera/camera.h"
+#include "path/path.h"
 #include "player/player.h"
 #include "manager/manager.h"
 #include "thirdparty/httplib.h"
 #include "timer/timer.h"
+#include "ui/text_bar.h"
 
 class GameManager : public Manager<GameManager>
 {
@@ -31,6 +33,7 @@ public:
 	int idx_char = 0;
 	std::vector<std::string> str_line_list;
 
+	Path* path = nullptr;
 protected:
 	GameManager(); 
 
@@ -65,6 +68,8 @@ private:
 	Player* player_1 = nullptr;
 	Player* player_2 = nullptr;
 	Camera camera_ui, camera_scene;
+
+	TextBar* text_bar = nullptr;
 
 	SDL_Event event;
 	bool is_quit = false;

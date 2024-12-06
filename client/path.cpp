@@ -2,6 +2,7 @@
 #include "vector/vector2.h"
 #include <cmath>
 #include <vector>
+#include <iostream>
 
 Path::Path(const std::vector<Vector2>& list)
 {
@@ -15,6 +16,9 @@ Path::Path(const std::vector<Vector2>& list)
 		for (int j = 1; j <= size; j++)
 			point_list.push_back(list[i - 1] + direction * j * 80);
 	}
+
+	// for (auto& temp : point_list)
+	//	std::cerr << temp.x << " " << temp.y << std::endl;
 }
 
 int Path::get_idx_at_progress(double progress) const

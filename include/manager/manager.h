@@ -6,7 +6,7 @@ class Manager
 public:
 	static T* instance()
 	{
-		if (manager == nullptr)
+		if (!manager)
 			manager = new T();
 		return manager;
 	}

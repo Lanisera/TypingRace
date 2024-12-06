@@ -14,7 +14,7 @@ void Timer::set_wait_time(double time)
 
 void Timer::set_one_shot(bool flag)
 {
-	one_shot = true;
+	one_shot = false;
 }
 
 void Timer::set_on_timeout(std::function<void()> on_finished)

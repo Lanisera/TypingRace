@@ -1,11 +1,15 @@
 #include "manager/game_manager.h"
 #include "manager/resources_manager.h"
+#include "path/path.h"
+#include "player/player.h"
 #include "thirdparty/httplib.h"
+#include "ui/text_bar.h"
 #include "vector/vector2.h"
 #include <SDL.h>
 #include <SDL_events.h>
 #include <SDL_hints.h>
 #include <SDL_image.h>
+#include <SDL_keycode.h>
 #include <SDL_messagebox.h>
 #include <SDL_mixer.h>
 #include <SDL_rect.h>
@@ -37,6 +41,29 @@ GameManager::GameManager()
 	init_assert(renderer, u8"渲染器创建失败");
 
 	init_assert(ResourcesManager::instance()->load_resources_from_file(renderer), u8"游戏基本资源加载失败");
+
+	camera_ui.set_size({1280, 720});
+	camera_scene.set_size({1280, 720});
+
+	static ResourcesManager* instance = ResourcesManager::instance();
+	static const ResourcesManager::AnimTexListPool& anim_tex_list_pool = instance->get_anim_tex_list_pool();
+
+	player_1 = new Player(
+			anim_tex_list_pool.find(ResID::Anim_Hajimi_Idle_Up)->second, anim_tex_list_pool.find(ResID::Anim_Hajimi_Idle_Down)->second,
+			anim_tex_list_pool.find(ResID::Anim_Hajimi_Idle_Left)->second, anim_tex_list_pool.find(ResID::Anim_Hajimi_Idle_Right)->second,
+			anim_tex_list_pool.find(ResID::Anim_Hajimi_Run_Up)->second, anim_tex_list_pool.find(ResID::Anim_Hajimi_Run_Down)->second,
+			anim_tex_list_pool.find(ResID::Anim_Hajimi_Run_Left)->second, anim_tex_list_pool.find(ResID::Anim_Hajimi_Run_Right)->second
+			);
+
+	path = new Path(
+	{
+		{842,842},{1322,842},{1322,442},
+		{2762,442},{2762,842},{3162,842},
+		{3162,1722},{2122,1722},{2122,1562},
+		{842,1562},{842,842}
+	});
+
+	text_bar = new TextBar();
 
 }
 
@@ -109,6 +136,19 @@ int GameManager::run(int argc, char **argv)
 	Uint64 last_counter = SDL_GetPerformanceCounter();
 	Uint64 counter_freq = SDL_GetPerformanceFrequency();
 
+	// TODO: for test
+	str_text = "hello world\nabc";
+	std::stringstream str_stream(str_text);
+	std::string str_line;
+	while (std::getline(str_stream, str_line))
+	{
+		str_line_list.push_back(str_line);
+		num_total_char += (int)str_line.length();
+	}
+
+	player_1->set_position(path->get_point_list().front());
+	player_1->refresh_new_target(0);
+	progress_1 = 0;
 
 	while (!is_quit)
 	{
@@ -137,13 +177,34 @@ void GameManager::on_input()
 	case SDL_QUIT:
 		is_quit = true;
 		break;
+	case SDL_KEYDOWN:
+		SDL_Keycode key = event.key.keysym.sym;
+		if (idx_line < str_line_list.size())
+		{
+			const std::string& str_line = str_line_list[idx_line];
+			if (str_line[idx_char] == static_cast<char>(key))
+			{
+				// TODO: for test
+				progress_1++;
+
+				idx_char++;
+				if (idx_char >= str_line.size())
+				{
+					idx_char = 0;
+					idx_line++;
+				}
+			}
+		}
+		break;
 	}
 
 }
 
 void GameManager::on_update(double delta)
 {
-
+	player_1->on_update(delta, (double)progress_1 / num_total_char);
+	text_bar->on_update(renderer);
+	camera_scene.look_at(player_1->get_position());
 }
 
 void GameManager::on_render()
@@ -151,10 +212,15 @@ void GameManager::on_render()
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
 
-	camera_scene.set_position(Vector2(0, 0));
-	static SDL_Rect rect_src = {842, 842, 1280, 720};
-	static SDL_Rect rect_dst = {0, 0, 1280, 720};
+	// TODO: for test
+	static SDL_Rect rect_src = {0, 0, 1280, 720};
+	static const SDL_Rect rect_dst = {0, 0, 1280, 720};
+	rect_src.x = (int)camera_scene.get_position().x, rect_src.y = (int)camera_scene.get_position().y;
 	SDL_RenderCopy(renderer, ResourcesManager::instance()->get_texture_pool().find(ResID::Tex_Background)->second, &rect_src, &rect_dst);
+
+	player_1->on_render(camera_scene, renderer);
+
+	text_bar->on_render(camera_ui, renderer);
 
 	SDL_RenderPresent(renderer);
 }

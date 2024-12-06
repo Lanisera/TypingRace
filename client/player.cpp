@@ -1,8 +1,12 @@
 #include "player/player.h"
 #include "camera/camera.h"
+#include "manager/game_manager.h"
+#include "path/path.h"
 #include "vector/vector2.h"
+#include <iostream>
 
-Player::Player(ResourcesManager::AnimTexList tex_list_idle_up, ResourcesManager::AnimTexList tex_list_idle_down, 
+Player::Player(
+			ResourcesManager::AnimTexList tex_list_idle_up, ResourcesManager::AnimTexList tex_list_idle_down, 
 			ResourcesManager::AnimTexList tex_list_idle_left, ResourcesManager::AnimTexList tex_list_idle_right,
 			ResourcesManager::AnimTexList tex_list_run_up, ResourcesManager::AnimTexList tex_list_run_down,
 			ResourcesManager::AnimTexList tex_list_run_left, ResourcesManager::AnimTexList tex_list_run_right)
@@ -40,21 +44,25 @@ Player::Player(ResourcesManager::AnimTexList tex_list_idle_up, ResourcesManager:
 	anim_run_right.set_anim_tex_list(tex_list_run_right);
 
 	size.x = 96, size.y = 96;
+	current_anim = &anim_idle_right;
 }
 
-void Player::on_update(double delta)
+void Player::on_update(double delta, double progress)
 {
-	if (!(position - pos_target).approx_zero())
-		velocity = (pos_target - position).normalize() * SPEED_RUN;
-	else
-		velocity = Vector2(0, 0);
+	Vector2 move_distance = velocity * delta;
+	Vector2 target_distance = pos_target - position;
+	position += move_distance < target_distance ? move_distance : target_distance;
 
-	if ((pos_target - position).length() <= (velocity * delta).length())
-		position = pos_target;
-	else
-		position += velocity * delta;
+	if ((pos_target - position).approx_zero())
+	{
+		refresh_new_target(progress);
 
-	if (((velocity - Vector2(0, 0)).approx_zero()))
+		direction = (pos_target - position).normalize();
+	}
+
+	velocity = direction * SPEED_RUN;
+
+	if (direction.approx_zero())
 	{
 		switch (facing)
 		{
@@ -122,11 +130,15 @@ const Vector2& Player::get_position() const
 	return position;
 }
 
-void Player::refresh_new_target()
+void Player::refresh_new_target(double progress)
 {
-	int idx_progress = path->get_idx_at_progress(0);
+	const Path* path = GameManager::instance()->path;
+
+	int idx_progress = path->get_idx_at_progress(progress);
 	if (idx_progress == idx_target)
-		pos_target = path->get_position_at_progress(0);
+	{
+		pos_target = path->get_position_at_progress(progress);
+	}
 	else
 	{
 		pos_target = path->get_point_list()[idx_target];
